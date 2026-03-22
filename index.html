@@ -617,7 +617,7 @@ function generateProducts(subcat, parentCat, showOutOfStock) {
         var priceBreaks = [];
         var p = basePrice;
         for (var b = 0; b < breakQtys.length; b++) {
-            priceBreaks.push({ qty: breakQtys[b], price: parseFloat(p.toFixed(4)) });
+            priceBreaks.push({ qty: breakQtys[b], price: parseFloat(p.toFixed(2)) });
             p *= (0.85 + rng() * 0.1);
         }
 
@@ -855,7 +855,7 @@ function updatePriceAtQty(val) {
     document.querySelectorAll('[data-prod-idx]').forEach(function(cell) {
         var idx = parseInt(cell.getAttribute('data-prod-idx'));
         var breaks = priceBreaksMap[idx];
-        if (breaks) cell.textContent = '$' + getPriceAtQty(breaks, priceAtQty).toFixed(4);
+        if (breaks) cell.textContent = '$' + getPriceAtQty(breaks, priceAtQty).toFixed(2);
     });
 }
 
@@ -997,8 +997,8 @@ function renderProductList(cat, subcat) {
         html += '<td><a onclick="navigateManufacturer(\'' + esc(p.manufacturer) + '\')">' + p.manufacturer + '</a></td>';
         html += '<td class="' + (p.inStock ? 'in-stock' : 'out-of-stock') + '">' + (p.inStock ? p.stock.toLocaleString() : 'Out of Stock') + '</td>';
         priceBreaksMap[globalIdx] = p.priceBreaks;
-        html += '<td class="price" data-prod-idx="' + globalIdx + '">$' + unitPrice.toFixed(4) + '</td>';
-        html += '<td><input type="number" class="qty-input" value="1" min="1" id="qty-' + globalIdx + '" ' + (!p.inStock ? 'disabled' : '') + '></td>';
+        html += '<td class="price" data-prod-idx="' + globalIdx + '">$' + unitPrice.toFixed(2) + '</td>';
+        html += '<td><input type="number" class="qty-input" value="0" min="0" id="qty-' + globalIdx + '" ' + (!p.inStock ? 'disabled' : '') + '></td>';
         html += '<td>';
         if (p.inStock) {
             html += '<button class="btn-sm btn-add" id="add-btn-' + globalIdx + '" onclick="addToCartFromList(' + globalIdx + ')">Add</button>';
@@ -1054,8 +1054,8 @@ function addToCartFromList(idx) {
     var p = currentProducts[idx];
     if (!p) return;
     var qtyEl = document.getElementById('qty-' + idx);
-    var qty = qtyEl ? parseInt(qtyEl.value) || 1 : 1;
-    if (qty < 1) qty = 1;
+    var qty = qtyEl ? parseInt(qtyEl.value) || 0 : 0;
+    if (qty < 1) { showToast('Please enter a quantity first'); if (qtyEl) qtyEl.focus(); return; }
     var unitPrice = getPriceAtQty(p.priceBreaks, qty);
     addToCart({ partNum: p.partNum, name: p.name, manufacturer: p.manufacturer, price: unitPrice }, idx, qty);
 }
@@ -1092,16 +1092,16 @@ function renderProductDetail(product, prodIdx) {
     // Price breaks
     html += '<table class="price-break-table"><thead><tr><th>Quantity</th><th>Unit Price</th><th>Extended</th></tr></thead><tbody>';
     product.priceBreaks.forEach(function(pb, idx) {
-        html += '<tr class="' + (idx === 0 ? 'active-break' : '') + '"><td>' + pb.qty.toLocaleString() + '</td><td>$' + pb.price.toFixed(4) + '</td><td>$' + (pb.price * pb.qty).toFixed(2) + '</td></tr>';
+        html += '<tr class="' + (idx === 0 ? 'active-break' : '') + '"><td>' + pb.qty.toLocaleString() + '</td><td>$' + pb.price.toFixed(2) + '</td><td>$' + (pb.price * pb.qty).toFixed(2) + '</td></tr>';
     });
     html += '</tbody></table>';
 
     // Add to cart
     html += '<div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;">';
     html += '<label style="font-size:13px;font-weight:600;">Qty:</label>';
-    html += '<input type="number" class="qty-input" id="detail-qty" value="1" min="1" style="width:80px;" oninput="updateDetailPrice()" ' + (!product.inStock ? 'disabled' : '') + '>';
-    html += '<span id="detail-unit-price" style="font-size:16px;font-weight:700;">$' + product.priceBreaks[0].price.toFixed(4) + '</span>';
-    html += '<span id="detail-ext-price" style="font-size:14px;color:var(--text-light);">Ext: $' + product.priceBreaks[0].price.toFixed(2) + '</span>';
+    html += '<input type="number" class="qty-input" id="detail-qty" value="0" min="0" style="width:80px;" oninput="updateDetailPrice()" ' + (!product.inStock ? 'disabled' : '') + '>';
+    html += '<span id="detail-unit-price" style="font-size:16px;font-weight:700;">$' + product.priceBreaks[0].price.toFixed(2) + '</span>';
+    html += '<span id="detail-ext-price" style="font-size:14px;color:var(--text-light);">Ext: $0.00</span>';
     html += '</div><div style="margin-top:12px;">';
     if (product.inStock) html += '<button class="btn-primary" style="max-width:250px;" onclick="addToCartFromDetail()">Add to Cart</button>';
     else html += '<button class="btn-secondary" style="max-width:250px;" onclick="navigatePage(\'Request a Quote\')">Request Quote</button>';
@@ -1125,7 +1125,7 @@ function updateDetailPrice() {
     var product = window._detailProduct;
     if (!product) return;
     var price = getPriceAtQty(product.priceBreaks, Math.max(1, qty));
-    document.getElementById('detail-unit-price').textContent = '$' + price.toFixed(4);
+    document.getElementById('detail-unit-price').textContent = '$' + price.toFixed(2);
     document.getElementById('detail-ext-price').textContent = 'Ext: $' + (price * qty).toFixed(2);
 
     var rows = document.querySelectorAll('.price-break-table tbody tr');
@@ -1141,8 +1141,8 @@ function addToCartFromDetail() {
     var product = window._detailProduct;
     if (!product) return;
     var qtyEl = document.getElementById('detail-qty');
-    var qty = parseInt(qtyEl.value) || 1;
-    if (qty < 1) qty = 1;
+    var qty = parseInt(qtyEl.value) || 0;
+    if (qty < 1) { showToast('Please enter a quantity first'); qtyEl.focus(); return; }
     var price = getPriceAtQty(product.priceBreaks, qty);
     addToCart({ partNum: product.partNum, name: product.name, manufacturer: product.manufacturer, price: price }, null, qty);
 }
@@ -1243,7 +1243,7 @@ function showCompare() {
         { label: 'Part #', key: 'partNum' }, { label: 'Manufacturer', key: 'manufacturer' },
         { label: 'Status', key: 'status' }, { label: 'Package', key: 'package' },
         { label: 'Stock', fn: function(p) { return p.inStock ? p.stock.toLocaleString() : 'Out of Stock'; } },
-        { label: 'Unit Price', fn: function(p) { return '$' + p.priceBreaks[0].price.toFixed(4); } },
+        { label: 'Unit Price', fn: function(p) { return '$' + p.priceBreaks[0].price.toFixed(2); } },
         { label: 'RoHS', fn: function(p) { return p.rohs ? 'Yes' : 'No'; } }
     ];
     rows.forEach(function(row) {
@@ -1612,7 +1612,7 @@ function updateCartUI() {
     body.innerHTML = cart.map(function(item, i) {
         return '<div class="cart-item"><div class="cart-item-info">' +
             '<div class="cart-item-name">' + item.partNum + '</div>' +
-            '<div class="cart-item-detail">' + item.manufacturer + ' &middot; $' + item.price.toFixed(4) + ' ea</div>' +
+            '<div class="cart-item-detail">' + item.manufacturer + ' &middot; $' + item.price.toFixed(2) + ' ea</div>' +
             '<div class="cart-qty-controls">' +
                 '<button class="cart-qty-btn" data-ci="' + i + '" data-ca="dec">-</button>' +
                 '<div class="cart-qty-val">' + item.qty + '</div>' +
