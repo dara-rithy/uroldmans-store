@@ -198,10 +198,13 @@ function buildNav() {
         });
     });
 
-    // Close dropdowns when clicking outside
+    // Close dropdowns when clicking outside or scrolling
     document.addEventListener('click', function() {
         nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
     });
+    window.addEventListener('scroll', function() {
+        nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
+    }, { passive: true });
 }
 
 // ============================================================
