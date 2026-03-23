@@ -15,7 +15,7 @@ function renderHomePage() {
     arrivals.forEach(function(a) {
         html += '<div class="arrival-card" onclick="navigateSubcategory(\'' + esc(a.cat) + '\',\'' + esc(a.name) + '\')">';
         html += '<div class="arrival-badge">NEW</div>';
-        html += '<div style="font-size:32px;margin-bottom:6px;">' + a.icon + '</div>';
+        html += '<div class="arrival-card-img">' + generateProductImage(a.cat, a.cat + a.name, 80) + '</div>';
         html += '<div style="font-size:13px;font-weight:600;color:var(--link);margin-bottom:4px;">' + a.name + '</div>';
         html += '<div style="font-size:11px;color:var(--text-light);margin-bottom:4px;">' + a.mfr + '</div>';
         html += '<div style="font-size:14px;font-weight:700;">$' + a.price + '</div>';
@@ -26,7 +26,7 @@ function renderHomePage() {
     html += '<div class="section-title">All Product Categories</div><div class="category-grid">';
     CATEGORIES.forEach(function(c) {
         html += '<div class="category-card" onclick="navigateCategory(\'' + esc(c.name) + '\')">';
-        html += '<div class="category-card-icon">' + c.icon + '</div>';
+        html += '<div class="category-card-icon">' + generateProductImage(c.name, c.name, 64) + '</div>';
         html += '<div class="category-card-name">' + c.name + '</div>';
         html += '<div class="category-card-count">' + c.count.toLocaleString() + ' Items</div>';
         html += '</div>';
@@ -44,7 +44,7 @@ function renderSubcategoryGrid(cat) {
     html += '<div class="section-title">' + cat.name + ' Subcategories</div><div class="category-grid">';
     cat.subcats.forEach(function(sc) {
         html += '<div class="category-card" onclick="navigateSubcategory(\'' + esc(cat.name) + '\',\'' + esc(sc.name) + '\')">';
-        html += '<div class="category-card-icon">' + cat.icon + '</div>';
+        html += '<div class="category-card-icon">' + generateProductImage(cat.name, cat.name + sc.name, 64) + '</div>';
         html += '<div class="category-card-name">' + sc.name + '</div>';
         html += '<div class="category-card-count">' + sc.count.toLocaleString() + ' Items</div>';
         html += '</div>';
@@ -116,6 +116,7 @@ function renderProductList(cat, subcat) {
     html += '<div class="product-list-header"><h2>' + subcat.name + '</h2><span style="font-size:13px;color:var(--text-light);">' + allProducts.length + ' products' + (filterCount > 0 ? ' (filtered)' : '') + '</span></div>';
     html += '<div class="table-wrap"><table class="product-table"><thead><tr>';
     html += '<th style="width:32px;"><input type="checkbox" onchange="toggleSelectAll(this)" title="Select for compare"></th>';
+    html += '<th style="width:44px;"></th>';
     html += buildSortHeader('partNum', 'Part #');
     html += buildSortHeader('mfrPartNum', 'Mfr Part #');
     html += '<th>Description</th>';
@@ -133,6 +134,7 @@ function renderProductList(cat, subcat) {
 
         html += '<tr style="' + (!p.inStock ? 'opacity:0.6;' : '') + '">';
         html += '<td><input type="checkbox" ' + (isCompared ? 'checked' : '') + ' onchange="toggleCompare(' + globalIdx + ',this.checked)"></td>';
+        html += '<td>' + generateProductImage(cat.name, p.partNum, 36) + '</td>';
         html += '<td><span class="prod-name" onclick="navigateProduct(\'' + esc(cat.name) + '\',\'' + esc(subcat.name) + '\',\'' + esc(p.partNum) + '\')">' + p.partNum + '</span></td>';
         html += '<td><span class="prod-name" onclick="navigateProduct(\'' + esc(cat.name) + '\',\'' + esc(subcat.name) + '\',\'' + esc(p.partNum) + '\')">' + p.mfrPartNum + '</span></td>';
         html += '<td style="max-width:200px;">' + p.name + ' <span class="status-badge ' + statusCls + '">' + p.status + '</span></td>';
@@ -212,8 +214,8 @@ function renderProductDetail(product, prodIdx) {
     var html = '<div class="back-link" onclick="navigateSubcategory(\'' + esc(product.category) + '\',\'' + esc(product.subcategory) + '\')">&#8592; Back to ' + product.subcategory + '</div>';
     html += '<div class="pd-layout">';
 
-    // Image placeholder
-    html += '<div><div class="pd-image-box">' + getCategoryIcon(product.category) + '</div>';
+    // Product image
+    html += '<div><div class="pd-image-box">' + generateProductImage(product.category, product.partNum, 200) + '</div>';
     html += '<div style="margin-top:12px;text-align:center;"><button class="btn-secondary" style="width:auto;padding:8px 16px;font-size:12px;" onclick="showToast(\'Datasheet PDF downloaded!\')">&#128196; Download Datasheet</button></div></div>';
 
     // Info

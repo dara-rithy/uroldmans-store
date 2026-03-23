@@ -133,7 +133,7 @@ function renderNewProductsPage(back) {
         var mfr = MANUFACTURERS[Math.floor(rng() * MANUFACTURERS.length)];
         html += '<div class="product-mini-card" onclick="navigateSubcategory(\'' + esc(cat.name) + '\',\'' + esc(sc.name) + '\')">';
         html += '<div class="pmc-badge new">NEW</div>';
-        html += '<div style="font-size:32px;margin-bottom:8px;">' + cat.icon + '</div>';
+        html += '<div style="margin-bottom:8px;">' + generateProductImage(cat.name, 'new' + cat.name + sc.name, 72) + '</div>';
         html += '<div class="pmc-name">' + sc.name + '</div>';
         html += '<div class="pmc-mfr">' + mfr + '</div>';
         html += '<div class="pmc-price">$' + (rng() * 20 + 1).toFixed(2) + '</div>';
@@ -154,7 +154,7 @@ function renderDealsPage(back) {
         var salePrice = (origPrice * (1 - discount/100)).toFixed(2);
         html += '<div class="product-mini-card" onclick="navigateSubcategory(\'' + esc(cat.name) + '\',\'' + esc(sc.name) + '\')">';
         html += '<div class="pmc-badge deal">' + discount + '% OFF</div>';
-        html += '<div style="font-size:32px;margin-bottom:8px;">' + cat.icon + '</div>';
+        html += '<div style="margin-bottom:8px;">' + generateProductImage(cat.name, 'deal' + cat.name + sc.name, 72) + '</div>';
         html += '<div class="pmc-name">' + sc.name + '</div>';
         html += '<div class="pmc-mfr">' + mfr + '</div>';
         html += '<div class="pmc-price">$' + salePrice + ' <span style="text-decoration:line-through;color:var(--text-light);font-size:12px;">$' + origPrice + '</span></div>';
@@ -168,7 +168,8 @@ function renderManufacturersPage(back) {
     var html = '<div class="content-page">' + back + '<h2>All Manufacturers</h2><p>Browse products from leading electronic component manufacturers.</p><div class="product-card-grid">';
     MANUFACTURERS.forEach(function(m) {
         html += '<div class="product-mini-card" onclick="navigateManufacturer(\'' + esc(m) + '\')">';
-        html += '<div style="font-size:32px;margin-bottom:8px;color:var(--primary);">&#127981;</div>';
+        var mfrCatIdx = MANUFACTURERS.indexOf(m) % CATEGORIES.length;
+        html += '<div style="margin-bottom:8px;">' + generateProductImage(CATEGORIES[mfrCatIdx].name, 'mfr' + m, 64) + '</div>';
         html += '<div class="pmc-name">' + m + '</div>';
         html += '<div class="pmc-mfr">View all products</div>';
         html += '</div>';
@@ -185,7 +186,7 @@ function renderManufacturerPage(mfrName) {
         var rng = seededRandom(mfrName + cat.name);
         var count = Math.floor(rng() * 200 + 20);
         html += '<div class="category-card" onclick="navigateCategory(\'' + esc(cat.name) + '\')">';
-        html += '<div class="category-card-icon">' + cat.icon + '</div>';
+        html += '<div class="category-card-icon">' + generateProductImage(cat.name, mfrName + cat.name, 64) + '</div>';
         html += '<div class="category-card-name">' + cat.name + '</div>';
         html += '<div class="category-card-count">' + count + ' Items</div>';
         html += '</div>';
