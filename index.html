@@ -583,6 +583,7 @@ var currentView = 'home';
 var currentCatName = null;
 var currentSubcatName = null;
 var skipPush = false;
+var activeFilters = {};  // { specName: [val1, val2], manufacturer: [m1, m2] }
 
 // ============================================================
 // UTILITY
@@ -730,6 +731,7 @@ function navigateSubcategory(catName, subcatName) {
     currentView = 'subcategory';
     currentPage = 1;
     currentSort = { field: null, dir: 'asc' };
+    activeFilters = {};
     var cat = CATEGORIES.find(function(c) { return c.name === catName; });
     var subcat = cat ? cat.subcats.find(function(s) { return s.name === subcatName; }) : null;
     if (!cat || !subcat) return;
@@ -824,16 +826,24 @@ function renderSidebar(activeCat, activeSubcat) {
             html += '<div class="filter-section"><div class="filter-title">Specifications</div>';
             catSpecs.forEach(function(spec, idx) {
                 var isOpen = idx < 2;
+                var checkedVals = activeFilters[spec.name] || [];
                 html += '<div class="param-section"><div class="param-header" onclick="toggleParam(this)">' + spec.name + ' <span class="param-arrow ' + (isOpen ? 'open' : '') + '">&#9660;</span></div>';
                 html += '<div class="param-body ' + (isOpen ? 'open' : '') + '"><div class="checkbox-group">';
-                spec.values.forEach(function(v) { html += '<label class="checkbox-item"><input type="checkbox"> ' + v + '</label>'; });
+                spec.values.forEach(function(v) {
+                    var isChecked = checkedVals.indexOf(v) >= 0;
+                    html += '<label class="checkbox-item"><input type="checkbox" data-filter-spec="' + spec.name + '" data-filter-val="' + v + '" ' + (isChecked ? 'checked' : '') + ' onchange="applyFilter(\'' + esc(spec.name) + '\',\'' + esc(v) + '\',this.checked)"> ' + v + '</label>';
+                });
                 html += '</div></div></div>';
             });
             html += '</div>';
         }
 
+        var checkedMfrs = activeFilters['manufacturer'] || [];
         html += '<div class="filter-section"><div class="filter-title">Manufacturer</div><div class="checkbox-group">';
-        MANUFACTURERS.slice(0, 8).forEach(function(m) { html += '<label class="checkbox-item"><input type="checkbox"> ' + m + '</label>'; });
+        MANUFACTURERS.slice(0, 8).forEach(function(m) {
+            var isChecked = checkedMfrs.indexOf(m) >= 0;
+            html += '<label class="checkbox-item"><input type="checkbox" data-filter-spec="manufacturer" data-filter-val="' + m + '" ' + (isChecked ? 'checked' : '') + ' onchange="applyFilter(\'manufacturer\',\'' + esc(m) + '\',this.checked)"> ' + m + '</label>';
+        });
         html += '</div></div>';
     }
 
@@ -857,6 +867,22 @@ function updatePriceAtQty(val) {
         var breaks = priceBreaksMap[idx];
         if (breaks) cell.textContent = '$' + getPriceAtQty(breaks, priceAtQty).toFixed(2);
     });
+}
+
+function applyFilter(specName, value, checked) {
+    if (!activeFilters[specName]) activeFilters[specName] = [];
+    if (checked) {
+        if (activeFilters[specName].indexOf(value) < 0) activeFilters[specName].push(value);
+    } else {
+        activeFilters[specName] = activeFilters[specName].filter(function(v) { return v !== value; });
+        if (activeFilters[specName].length === 0) delete activeFilters[specName];
+    }
+    currentPage = 1;
+    if (currentView === 'subcategory' && currentCatName && currentSubcatName) {
+        var cat = CATEGORIES.find(function(c) { return c.name === currentCatName; });
+        var subcat = cat ? cat.subcats.find(function(s) { return s.name === currentSubcatName; }) : null;
+        if (cat && subcat) renderProductList(cat, subcat);
+    }
 }
 
 function toggleInStock() {
@@ -943,6 +969,19 @@ function renderProductList(cat, subcat) {
     currentSubcatName = subcat.name;
     priceBreaksMap = {};
     var allProducts = generateProducts(subcat, cat.name, !inStockOnly);
+
+    // Apply parametric and manufacturer filters
+    var filterKeys = Object.keys(activeFilters);
+    if (filterKeys.length > 0) {
+        allProducts = allProducts.filter(function(p) {
+            return filterKeys.every(function(key) {
+                var vals = activeFilters[key];
+                if (!vals || vals.length === 0) return true;
+                if (key === 'manufacturer') return vals.indexOf(p.manufacturer) >= 0;
+                return p.specs && p.specs[key] && vals.indexOf(p.specs[key]) >= 0;
+            });
+        });
+    }
     currentProducts = allProducts;
 
     // Sort
@@ -971,7 +1010,8 @@ function renderProductList(cat, subcat) {
 
     var main = document.getElementById('main-area');
     var html = '<div class="back-link" onclick="navigateCategory(\'' + esc(cat.name) + '\')">&#8592; Back to ' + cat.name + '</div>';
-    html += '<div class="product-list-header"><h2>' + subcat.name + '</h2><span style="font-size:13px;color:var(--text-light);">' + allProducts.length + ' products</span></div>';
+    var filterCount = Object.keys(activeFilters).length;
+    html += '<div class="product-list-header"><h2>' + subcat.name + '</h2><span style="font-size:13px;color:var(--text-light);">' + allProducts.length + ' products' + (filterCount > 0 ? ' (filtered)' : '') + '</span></div>';
     html += '<div class="table-wrap"><table class="product-table"><thead><tr>';
     html += '<th style="width:32px;"><input type="checkbox" onchange="toggleSelectAll(this)" title="Select for compare"></th>';
     html += buildSortHeader('partNum', 'Part #');
@@ -1143,6 +1183,7 @@ function addToCartFromDetail() {
     var qtyEl = document.getElementById('detail-qty');
     var qty = parseInt(qtyEl.value) || 0;
     if (qty < 1) { showToast('Please enter a quantity first'); qtyEl.focus(); return; }
+    if (qty < product.minQty) { showToast('Minimum order quantity is ' + product.minQty); qtyEl.value = product.minQty; qtyEl.focus(); return; }
     var price = getPriceAtQty(product.priceBreaks, qty);
     addToCart({ partNum: product.partNum, name: product.name, manufacturer: product.manufacturer, price: price }, null, qty);
 }
@@ -1488,7 +1529,8 @@ function submitQuote() {
     var parts = document.getElementById('quote-parts').value.trim();
     var result = document.getElementById('quote-result');
     if (!name || !email || !parts) { result.innerHTML = '<p style="color:var(--primary);font-size:13px;">Please fill in all required fields.</p>'; return; }
-    result.innerHTML = '<p style="color:#2e7d32;font-size:13px;font-weight:600;">Quote request submitted! Reference: QR-2026-' + Math.floor(Math.random() * 9000 + 1000) + '. We\'ll respond within 1 business day.</p>';
+    var refNum = Math.floor(Date.now() / 1000) % 10000;
+    result.innerHTML = '<p style="color:#2e7d32;font-size:13px;font-weight:600;">Quote request submitted! Reference: QR-2026-' + refNum + '. We\'ll respond within 1 business day.</p>';
     showToast('Quote request submitted!');
 }
 
@@ -1535,6 +1577,30 @@ searchInput.addEventListener('input', function() {
         });
     }
 
+    // Search products by part number or mfr part number
+    if (q.length >= 3) {
+        var matchedProducts = [];
+        CATEGORIES.forEach(function(cat) {
+            cat.subcats.forEach(function(sc) {
+                if (matchedProducts.length >= 5) return;
+                var prods = generateProducts(sc, cat.name, false);
+                prods.forEach(function(p) {
+                    if (matchedProducts.length >= 5) return;
+                    if (p.partNum.toLowerCase().includes(q) || p.mfrPartNum.toLowerCase().includes(q)) {
+                        matchedProducts.push({ prod: p, cat: cat.name, subcat: sc.name });
+                    }
+                });
+            });
+        });
+        if (matchedProducts.length > 0) {
+            html += '<div class="search-group-label">Products</div>';
+            matchedProducts.forEach(function(m) {
+                html += '<div class="search-result-item" data-action="product" data-cat="' + m.cat + '" data-subcat="' + m.subcat + '" data-part="' + m.prod.partNum + '">';
+                html += '<div class="sr-info"><div class="sr-name">' + m.prod.mfrPartNum + ' (' + m.prod.partNum + ')</div><div class="sr-detail">' + m.prod.manufacturer + ' &middot; $' + m.prod.price.toFixed(2) + '</div></div></div>';
+            });
+        }
+    }
+
     if (html) {
         searchResults.innerHTML = html;
         searchResults.classList.add('active');
@@ -1544,6 +1610,7 @@ searchInput.addEventListener('input', function() {
                 if (action === 'cat') navigateCategory(this.getAttribute('data-cat'));
                 else if (action === 'subcat') navigateSubcategory(this.getAttribute('data-cat'), this.getAttribute('data-subcat'));
                 else if (action === 'mfr') navigateManufacturer(this.getAttribute('data-mfr'));
+                else if (action === 'product') navigateProduct(this.getAttribute('data-cat'), this.getAttribute('data-subcat'), this.getAttribute('data-part'));
                 searchResults.classList.remove('active');
                 searchInput.value = '';
             });
@@ -1664,7 +1731,11 @@ function closeCart() {
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-document.getElementById('login-trigger').addEventListener('click', function() { showLoginForm(); openModal('login-modal'); });
+document.getElementById('login-trigger').addEventListener('click', function() {
+    var user = JSON.parse(localStorage.getItem('uro_user') || 'null');
+    if (user) { doLogout(); return; }
+    showLoginForm(); openModal('login-modal');
+});
 
 function showLoginForm() {
     document.getElementById('auth-title').textContent = 'Sign In';
@@ -1690,9 +1761,13 @@ function showRegisterForm() {
 function doLogin() {
     var email = document.getElementById('login-email').value.trim();
     var pass = document.getElementById('login-pass').value;
-    if (!email || !pass) { showToast('Please fill in all fields'); return; }
+    if (!email) { showToast('Please enter your email'); return; }
+    if (!pass) { showToast('Please enter your password'); return; }
+    if (!/\S+@\S+\.\S+/.test(email)) { showToast('Please enter a valid email'); return; }
+    var displayName = email.split('@')[0];
+    localStorage.setItem('uro_user', JSON.stringify({ name: displayName, email: email }));
     showToast('Welcome back! Signed in as ' + email);
-    document.getElementById('login-trigger').textContent = email.split('@')[0];
+    document.getElementById('login-trigger').textContent = displayName;
     closeModal('login-modal');
 }
 
@@ -1700,10 +1775,20 @@ function doRegister() {
     var name = document.getElementById('reg-name').value.trim();
     var email = document.getElementById('reg-email').value.trim();
     var pass = document.getElementById('reg-pass').value;
-    if (!name || !email || !pass) { showToast('Please fill in all fields'); return; }
+    if (!name) { showToast('Please enter your name'); return; }
+    if (!email) { showToast('Please enter your email'); return; }
+    if (!/\S+@\S+\.\S+/.test(email)) { showToast('Please enter a valid email'); return; }
+    if (!pass || pass.length < 6) { showToast('Password must be at least 6 characters'); return; }
+    localStorage.setItem('uro_user', JSON.stringify({ name: name, email: email }));
     showToast('Account created! Welcome, ' + name);
     document.getElementById('login-trigger').textContent = name;
     closeModal('login-modal');
+}
+
+function doLogout() {
+    localStorage.removeItem('uro_user');
+    document.getElementById('login-trigger').textContent = 'Login / Register';
+    showToast('Signed out successfully');
 }
 
 document.getElementById('cart-trigger').addEventListener('click', openCart);
@@ -1799,6 +1884,8 @@ function showToast(msg) {
 // INIT
 // ============================================================
 if (localStorage.getItem('uro_darkmode') === '1') document.body.classList.add('dark-mode');
+var savedUser = JSON.parse(localStorage.getItem('uro_user') || 'null');
+if (savedUser) document.getElementById('login-trigger').textContent = savedUser.name;
 buildNav();
 buildFooter();
 renderSidebar(null);
@@ -1813,6 +1900,7 @@ if (location.hash) {
     if (parts[0] === 'category' && parts[1]) navigateCategory(parts[1]);
     else if (parts[0] === 'subcategory' && parts[1] && parts[2]) navigateSubcategory(parts[1], parts[2]);
     else if (parts[0] === 'product' && parts[1] && parts[2] && parts[3]) navigateProduct(parts[1], parts[2], parts[3]);
+    else if (parts[0] === 'compare') { if (compareList.length >= 2) showCompare(); }
     else if (parts[0] === 'page' && parts[1]) {
         if (parts[1].startsWith('mfr-')) navigateManufacturer(parts[1].substring(4));
         else navigatePage(parts[1]);
