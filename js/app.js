@@ -184,6 +184,24 @@ function buildNav() {
     nav.querySelectorAll('[data-nav-cat]').forEach(function(a) {
         a.addEventListener('click', function() { navigateCategory(this.getAttribute('data-nav-cat')); });
     });
+
+    // Touch/click support for dropdowns (hover doesn't work on mobile)
+    nav.querySelectorAll('.nav-item-wrapper').forEach(function(wrapper) {
+        var navItem = wrapper.querySelector('.nav-item');
+        if (!wrapper.querySelector('.nav-dropdown') && !wrapper.querySelector('.mega-menu')) return;
+        navItem.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var isOpen = wrapper.classList.contains('open');
+            // Close all other dropdowns first
+            nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
+            if (!isOpen) wrapper.classList.add('open');
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
+    });
 }
 
 // ============================================================
