@@ -186,24 +186,38 @@ function buildNav() {
     });
 
     // Touch/click support for dropdowns (hover doesn't work on mobile)
+    var navInner = document.getElementById('main-nav-inner');
+
+    function closeAllDropdowns() {
+        nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
+        navInner.style.overflow = '';
+    }
+
     nav.querySelectorAll('.nav-item-wrapper').forEach(function(wrapper) {
         var navItem = wrapper.querySelector('.nav-item');
         if (!wrapper.querySelector('.nav-dropdown') && !wrapper.querySelector('.mega-menu')) return;
         navItem.addEventListener('click', function(e) {
             e.stopPropagation();
             var isOpen = wrapper.classList.contains('open');
-            // Close all other dropdowns first
-            nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
-            if (!isOpen) wrapper.classList.add('open');
+            closeAllDropdowns();
+            if (!isOpen) {
+                wrapper.classList.add('open');
+                // Allow dropdown to overflow the scrollable nav
+                navInner.style.overflow = 'visible';
+            }
         });
     });
 
-    // Close dropdowns when clicking outside or scrolling
-    document.addEventListener('click', function() {
-        nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
-    });
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() { closeAllDropdowns(); });
+
+    // Close dropdowns on scroll (with threshold to avoid accidental close)
+    var lastScrollY = window.scrollY;
     window.addEventListener('scroll', function() {
-        nav.querySelectorAll('.nav-item-wrapper.open').forEach(function(w) { w.classList.remove('open'); });
+        if (Math.abs(window.scrollY - lastScrollY) > 10) {
+            closeAllDropdowns();
+        }
+        lastScrollY = window.scrollY;
     }, { passive: true });
 }
 
