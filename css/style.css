@@ -103,10 +103,10 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 .category-card { border: 1px solid var(--border); border-radius: 4px; padding: 16px; text-align: center; background: white; cursor: pointer; transition: all 0.15s; }
 .category-card:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .category-card-icon { font-size: 36px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; }
-.category-card-icon svg { border-radius: 6px; }
+.category-card-icon img { border-radius: 6px; object-fit: contain; background: #fff; }
 .product-thumb { border-radius: 4px; vertical-align: middle; }
 .arrival-card-img { margin-bottom: 6px; }
-.arrival-card-img svg { border-radius: 6px; }
+.arrival-card-img img { border-radius: 6px; object-fit: contain; background: #fff; }
 .category-card-name { font-size: 13px; font-weight: 600; color: var(--link); margin-bottom: 4px; line-height: 1.3; }
 .category-card:hover .category-card-name { color: var(--link-hover); }
 .category-card-count { font-size: 12px; color: var(--text-light); }
@@ -129,6 +129,7 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 .sort-asc .sort-arrow::after { content: '\25B2'; }
 .sort-desc .sort-arrow::after { content: '\25BC'; }
 .product-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
+.product-table td img { border-radius: 4px; object-fit: contain; background: #fff; display: block; }
 .product-table tr:hover { background: #fafafa; }
 .prod-name { color: var(--link); font-weight: 600; cursor: pointer; }
 .prod-name:hover { color: var(--primary); text-decoration: underline; }
@@ -156,7 +157,8 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 
 /* PRODUCT DETAIL */
 .pd-layout { display: grid; grid-template-columns: 300px 1fr; gap: 32px; }
-.pd-image-box { border: 1px solid var(--border); border-radius: 6px; padding: 24px; display: flex; align-items: center; justify-content: center; background: var(--bg-light); height: 300px; font-size: 80px; }
+.pd-image-box { border: 1px solid var(--border); border-radius: 6px; padding: 24px; display: flex; align-items: center; justify-content: center; background: #fff; height: 300px; font-size: 80px; }
+.pd-image-box img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
 .pd-part-num { font-size: 12px; color: var(--text-light); margin-bottom: 4px; }
 .pd-mfr-part { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
 .pd-mfr-link { font-size: 14px; color: var(--link); cursor: pointer; margin-bottom: 8px; display: inline-block; }
