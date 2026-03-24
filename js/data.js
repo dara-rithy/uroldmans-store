@@ -118,6 +118,36 @@ var CATEGORY_SPECS = {
         { name: "Core", values: ["ARM Cortex-M0","ARM Cortex-M3","ARM Cortex-M4","AVR","PIC","RISC-V"] },
         { name: "Flash Size", values: ["16KB","32KB","64KB","128KB","256KB","512KB"] },
         { name: "Speed", values: ["8MHz","16MHz","48MHz","72MHz","120MHz","240MHz"] }
+    ],
+    "Connectors": [
+        { name: "Type", values: ["USB-A","USB-B","USB-C","Micro-USB","HDMI","RJ45","D-Sub","JST"] },
+        { name: "Gender", values: ["Male","Female","Receptacle","Header"] },
+        { name: "Pins", values: ["2","4","6","8","10","20","40"] }
+    ],
+    "LEDs & Optoelectronics": [
+        { name: "Color", values: ["Red","Green","Blue","White","Yellow","RGB","IR","UV"] },
+        { name: "Forward Voltage", values: ["1.8V","2.0V","2.2V","3.0V","3.2V","3.6V"] },
+        { name: "Wavelength", values: ["470nm","520nm","590nm","620nm","660nm","850nm","940nm"] }
+    ],
+    "Inductors & Coils": [
+        { name: "Inductance", values: ["1uH","2.2uH","4.7uH","10uH","22uH","47uH","100uH","470uH"] },
+        { name: "Current Rating", values: ["0.5A","1A","2A","3A","5A","10A"] },
+        { name: "DC Resistance", values: ["0.01R","0.05R","0.1R","0.2R","0.5R","1R"] }
+    ],
+    "Circuit Protection": [
+        { name: "Type", values: ["Fuse","TVS Diode","Varistor","PTC","Gas Discharge","ESD Suppressor"] },
+        { name: "Voltage Rating", values: ["5V","12V","24V","48V","120V","240V","600V"] },
+        { name: "Current Rating", values: ["0.5A","1A","2A","5A","10A","15A","20A"] }
+    ],
+    "Development Boards": [
+        { name: "Platform", values: ["Arduino","Raspberry Pi","ESP32","STM32","FPGA","BeagleBone"] },
+        { name: "Connectivity", values: ["WiFi","Bluetooth","Ethernet","LoRa","Zigbee","None"] },
+        { name: "GPIO Pins", values: ["6","12","20","26","40","54"] }
+    ],
+    "Sensors": [
+        { name: "Type", values: ["Temperature","Humidity","Pressure","Motion","Light","Gas","Proximity"] },
+        { name: "Interface", values: ["I2C","SPI","UART","Analog","1-Wire","PWM"] },
+        { name: "Voltage", values: ["1.8V","3.3V","5V","12V"] }
     ]
 };
 
