@@ -318,10 +318,20 @@ body.dark-mode .toast { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
 
 /* RESPONSIVE */
 
+/* Mobile filter button + slide-out panel */
+.mobile-filter-btn { display: none; }
+
 /* Tablet */
 @media (max-width: 1024px) {
     .main-content { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
+    .sidebar { display: none; position: fixed; top: 0; left: 0; width: 300px; max-width: 85vw; height: 100vh; z-index: 1000; background: var(--bg); box-shadow: 4px 0 20px rgba(0,0,0,0.2); overflow-y: auto; padding: 16px; padding-top: 56px; transition: transform 0.25s ease; transform: translateX(-100%); }
+    .sidebar.mobile-open { display: block; transform: translateX(0); }
+    .mobile-filter-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
+    .mobile-filter-btn:active { transform: scale(0.97); }
+    .mobile-filter-close { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .mobile-filter-close:hover { background: var(--bg-light); }
+    .mobile-filter-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; }
+    .mobile-filter-overlay.active { display: block; }
     .pd-layout { grid-template-columns: 1fr; }
     .mega-menu { width: 100%; }
 }
@@ -379,8 +389,8 @@ body.dark-mode .toast { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     .arrival-card-img img { width: 64px !important; height: 64px !important; }
 
     /* Product table: make it card-like on mobile */
-    .product-list-header { flex-direction: column; align-items: flex-start; gap: 4px; }
-    .product-list-header h2 { font-size: 18px; }
+    .product-list-header { flex-wrap: wrap; align-items: center; gap: 8px; }
+    .product-list-header h2 { font-size: 18px; flex: 1; }
     .table-wrap { margin: 0 -12px; padding: 0 12px; }
     .product-table { font-size: 11px; }
     .product-table th { padding: 6px 4px; font-size: 10px; }

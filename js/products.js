@@ -113,7 +113,9 @@ function renderProductList(cat, subcat) {
     var main = document.getElementById('main-area');
     var html = '<div class="back-link" onclick="navigateCategory(\'' + esc(cat.name) + '\')">&#8592; Back to ' + cat.name + '</div>';
     var filterCount = Object.keys(activeFilters).length;
-    html += '<div class="product-list-header"><h2>' + subcat.name + '</h2><span style="font-size:13px;color:var(--text-light);">' + allProducts.length + ' products' + (filterCount > 0 ? ' (filtered)' : '') + '</span></div>';
+    html += '<div class="product-list-header"><h2>' + subcat.name + '</h2><span style="font-size:13px;color:var(--text-light);">' + allProducts.length + ' products' + (filterCount > 0 ? ' (filtered)' : '') + '</span>';
+    html += '<button class="mobile-filter-btn" onclick="openMobileFilters()">&#9776; Filters' + (filterCount > 0 ? ' (' + filterCount + ')' : '') + '</button>';
+    html += '</div>';
     html += '<div class="table-wrap"><table class="product-table"><thead><tr>';
     html += '<th style="width:32px;"><input type="checkbox" onchange="toggleSelectAll(this)" title="Select for compare"></th>';
     html += '<th style="width:44px;"></th>';

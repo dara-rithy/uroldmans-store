@@ -103,9 +103,25 @@ function generateProductImageURI(catName, seed, size) {
 // ============================================================
 // SIDEBAR
 // ============================================================
+function openMobileFilters() {
+    var sb = document.getElementById('sidebar');
+    var overlay = document.getElementById('mobile-filter-overlay');
+    sb.classList.add('mobile-open');
+    overlay.classList.add('active');
+}
+
+function closeMobileFilters() {
+    var sb = document.getElementById('sidebar');
+    var overlay = document.getElementById('mobile-filter-overlay');
+    sb.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+}
+
+document.getElementById('mobile-filter-overlay').addEventListener('click', closeMobileFilters);
+
 function renderSidebar(activeCat, activeSubcat) {
     var sb = document.getElementById('sidebar');
-    var html = '';
+    var html = '<button class="mobile-filter-close" onclick="closeMobileFilters()" title="Close filters">&times;</button>';
 
     if (activeSubcat) {
         html += '<div class="price-at-qty-box"><label>PRICE AT QUANTITY</label>';
