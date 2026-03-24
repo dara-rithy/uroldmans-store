@@ -322,6 +322,7 @@ body.dark-mode .toast { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
 
 /* Mobile filter button + slide-out panel */
 .mobile-filter-btn { display: none; }
+.mobile-filter-close { display: none; }
 
 /* Tablet */
 @media (max-width: 1024px) {
