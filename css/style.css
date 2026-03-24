@@ -377,6 +377,11 @@ body.dark-mode .page-btn.active { background: var(--primary); color: white; }
     .product-table th { padding: 6px 4px; font-size: 10px; }
     .product-table td { padding: 8px 4px; font-size: 11px; }
     .product-table td img { width: 28px !important; height: 28px !important; }
+    /* Hide description and checkbox on tablets */
+    .product-table th:nth-child(5),
+    .product-table td:nth-child(5) { display: none; /* hide description */ }
+    .product-table th:nth-child(1),
+    .product-table td:nth-child(1) { display: none; /* hide compare checkbox */ }
     .qty-input { width: 40px; padding: 6px 2px; font-size: 13px; }
     .btn-sm { padding: 6px 8px; font-size: 11px; }
 
@@ -443,6 +448,10 @@ body.dark-mode .page-btn.active { background: var(--primary); color: white; }
     .product-table td:nth-child(2) { display: none; /* hide thumbnail */ }
     .product-table th:nth-child(4),
     .product-table td:nth-child(4) { display: none; /* hide mfr part # */ }
+    .product-table th:nth-child(6),
+    .product-table td:nth-child(6) { display: none; /* hide manufacturer */ }
+    .product-table th:nth-child(7),
+    .product-table td:nth-child(7) { display: none; /* hide stock */ }
 
     .category-card { min-width: 120px; }
     .arrival-card { min-width: 130px; }
