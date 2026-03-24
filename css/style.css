@@ -306,6 +306,15 @@ body.dark-mode .pd-image-box { background: #16213e; }
 body.dark-mode .spec-table tr:nth-child(even) { background: #16213e; }
 body.dark-mode .page-btn { background: #16213e; color: #e0e0e0; border-color: #3a3a5a; }
 body.dark-mode .page-btn.active { background: var(--primary); color: white; }
+body.dark-mode .breadcrumb-bar { background: #16213e; border-color: #2a2a4a; }
+body.dark-mode .filter-section { border-color: #2a2a4a; }
+body.dark-mode .param-body { border-color: #2a2a4a; }
+body.dark-mode .product-table td { border-color: #2a2a4a; }
+body.dark-mode .product-table th { border-color: #3a3a5a; }
+body.dark-mode .btn-secondary { background: #2a2a4a; color: #e0e0e0; border-color: #3a3a5a; }
+body.dark-mode .table-wrap { border-color: #2a2a4a; }
+body.dark-mode .product-table td img { background: #2a2a4a; }
+body.dark-mode .toast { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
 
 /* RESPONSIVE */
 
