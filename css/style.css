@@ -46,11 +46,13 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 .nav-item { padding: 14px 20px; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 4px; border-bottom: 3px solid transparent; transition: all 0.15s; }
 .nav-item:hover { background: var(--bg-light); border-bottom-color: var(--primary); color: var(--primary); }
 .nav-dropdown { position: absolute; top: 100%; left: 0; background: white; border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-radius: 0 0 6px 6px; min-width: 280px; z-index: 200; padding: 8px 0; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; }
-.nav-item-wrapper:hover .nav-dropdown, .nav-item-wrapper.open .nav-dropdown { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.nav-item-wrapper.open .nav-dropdown { opacity: 1; transform: translateY(0); pointer-events: auto; }
+@media (hover: hover) { .nav-item-wrapper:hover .nav-dropdown { opacity: 1; transform: translateY(0); pointer-events: auto; } }
 .nav-dropdown a { display: block; padding: 10px 20px; font-size: 13px; color: var(--text); transition: background 0.15s, color 0.15s; }
 .nav-dropdown a:hover { background: var(--bg-light); color: var(--primary); text-decoration: none; }
 .mega-menu { position: absolute; top: 100%; left: 0; background: white; border: 1px solid var(--border); box-shadow: 0 12px 36px rgba(0,0,0,0.15); border-radius: 0 0 8px 8px; min-width: 280px; z-index: 200; padding: 8px 0; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; }
-.nav-item-wrapper:hover .mega-menu, .nav-item-wrapper.open .mega-menu { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.nav-item-wrapper.open .mega-menu { opacity: 1; transform: translateY(0); pointer-events: auto; }
+@media (hover: hover) { .nav-item-wrapper:hover .mega-menu { opacity: 1; transform: translateY(0); pointer-events: auto; } }
 .mega-menu-grid { display: flex; flex-direction: column; }
 .mega-menu-grid a { display: block; padding: 10px 20px; font-size: 13px; color: var(--text); }
 .mega-menu-grid a:hover { background: var(--bg-light); color: var(--primary); text-decoration: none; }
